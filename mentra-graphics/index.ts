@@ -3,7 +3,7 @@ import { DrawCommand, executeDrawingCommands } from './drawCommands';
 
 // Load configuration from environment variables
 const PACKAGE_NAME = process.env.PACKAGE_NAME || "com.example.myfirstmentraosapp"
-const PORT = parseInt(process.env.PORT || "3000")
+const PORT = parseInt(process.env.PORT || "8080")
 const MENTRAOS_API_KEY = process.env.MENTRAOS_API_KEY
 
 if (!MENTRAOS_API_KEY) {
