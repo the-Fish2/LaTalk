@@ -1,10 +1,12 @@
 import { create1BitBMP, createCanvas, drawLine, drawCircle, drawRect } from './bitmap'; 
+import { drawText } from './font';
 
 export type DrawCommand =
   | { type: "line"; x1: number; y1: number; x2: number; y2: number }
   | { type: "circle"; cx: number; cy: number; radius: number; filled?: boolean }
   | { type: "triangle"; x1: number; y1: number; x2: number; y2: number; x3: number; y3: number; filled?: boolean }
-  | { type: "rect"; x: number; y: number; width: number; height: number; filled?: boolean };
+  | { type: "rect"; x: number; y: number; width: number; height: number; filled?: boolean }
+  | { type: "text"; text_str: string, x: number, y: number, scale: number, spacing: number};
 
 function applyCommand(
   canvas: boolean[][],
@@ -26,6 +28,9 @@ function applyCommand(
     case "rect":
       drawRect(canvas, cmd.x, cmd.y, cmd.width, cmd.height, color, !!cmd.filled);
       break;
+    case "text":
+      drawText(canvas, cmd.text_str, cmd.x, cmd.y, cmd.scale, cmd.spacing);
+      break;
     default:
       console.warn("Unknown draw command:", (cmd as any).type);
   }
@@ -35,14 +40,20 @@ export function renderCommands(
   width: number,
   height: number,
   commands: DrawCommand[],
-  color: boolean = true
+  color: boolean = true,
+  existingCanvas?: boolean[][]
 ): boolean[][] {
-  const canvas = createCanvas(width, height);
+  const canvas = existingCanvas ?? createCanvas(width, height); // reuse if provided
   for (const cmd of commands) {
     applyCommand(canvas, cmd, color);
   }
   return canvas;
 }
+
+export function getOrCreateCanvas(width: number, height: number): boolean[][] {
+  return createCanvas(width, height);
+}
+
 
 export async function renderCommandsStepwise(
   width: number,
@@ -82,9 +93,10 @@ export async function executeDrawingCommands(
   session: any,  
   commands: DrawCommand[],
   width: number = 200,
-  height: number = 200
+  height: number = 200,
+  existingCanvas?: boolean[][]
   ): Promise<void> {
-    const fullCanvas = renderCommands(width, height, commands, true);
+    const fullCanvas = renderCommands(width, height, commands, true, existingCanvas);
     console.log("Finished rendering commands")
     await showCanvasInSession(fullCanvas, session, width, height);
 }
