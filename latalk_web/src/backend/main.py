@@ -1,10 +1,10 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 import asyncio
 import json
-
 
 app = FastAPI()
 
@@ -29,5 +29,13 @@ async def process_text(input_text: str):
 @app.post("/stream")
 async def stream_text(request: Request):
     data = await request.json()
-    input_text = data.get("input", "Lorem ipsum")
-    return StreamingResponse(process_text(input_text), media_type="application/json")
+
+    user_input = data.get("input", "")
+
+    # Example: respond "Received" if input contains "hello"
+    if "hello" in user_input.lower():
+        response_text = {"nl": "Received", "latex": ""}
+    else:
+        response_text = {"nl": "Processed: " + user_input, "latex": ""}
+
+    return JSONResponse(content=response_text)
