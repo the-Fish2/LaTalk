@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Latex from "react-latex-next";
 import "./App.css";
+import micpic from "./Microphone2.png"
 
 function App() {
   const [isListening, setIsListening] = useState(false);
@@ -37,33 +38,40 @@ function App() {
   };
 
   return (
+    
     <div className="app-container">
-      {/* Left column */}
-      <div className="left-panel">
+        <h1>LaTalk</h1>
+        <h2>Speech to LaTeX translator.</h2>
+
+
         <button
-          className={`mic-button ${isListening ? "active" : ""}`}
-          onClick={handleMicClick}
-        >
-          🎤
+              className={`mic-button ${isListening ? "active" : ""}`}
+              onClick={handleMicClick}
+            >
+            <img className = "micIcon" src = {micpic} alt = "mic" />
         </button>
 
-        <div className="output-box">
-          <h2>Natural Language Output</h2>
-          <p>{nlText}</p>
+        <div className = "bodyContainer">
+
+          <div className = "textContainer">
+            <h3>Natural Language</h3>
+            <div className = "scrollContainer">
+              <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
+              Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum. Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
+              Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+            </div>
+          </div>
+          <div className = "textContainer">
+            <h3>LaTeX</h3>
+            <div className = "scrollContainer">
+              <p>some more text here translated into latex</p>
+              <p className = "annotation">i love rats!</p>
+            </div>
+          </div>
+
         </div>
-      </div>
 
-      {/* Center title */}
-      <div className="title-container">
-        <h1>LaTalX</h1>
       </div>
-
-      {/* Right column */}
-      <div className="right-panel">
-        <h2>LaTeX Renderer</h2>
-        <Latex>{latexText}</Latex>
-      </div>
-    </div>
   );
 }
 
