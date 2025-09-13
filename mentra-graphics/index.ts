@@ -1,4 +1,5 @@
-import {AppServer, AppSession} from "@mentra/sdk"
+import { AppServer, AppSession } from "@mentra/sdk";
+import { DrawCommand, executeDrawingCommands } from './drawCommands';
 
 // Load configuration from environment variables
 const PACKAGE_NAME = process.env.PACKAGE_NAME || "com.example.myfirstmentraosapp"
@@ -27,7 +28,14 @@ class MyMentraOSApp extends AppServer {
     // Display "Hello, World!" on the glasses
     session.layouts.showTextWall("Hello, World!")
 
-    // Log when the session is disconnected
+    const commands: DrawCommand[] = [
+    { type: "circle", cx: 50, cy: 50, radius: 20 },
+    { type: "line", x1: 10, y1: 10, x2: 90, y2: 90 },
+    { type: "triangle", x1: 20, y1: 80, x2: 80, y2: 80, x3: 50, y3: 20 },
+    ];
+
+    executeDrawingCommands(session, commands, 200, 200, false); 
+
     session.events.onDisconnected(() => {
       session.logger.info(`Session ${sessionId} disconnected.`)
     })
@@ -44,3 +52,4 @@ const server = new MyMentraOSApp({
 server.start().catch(err => {
   console.error("Failed to start server:", err)
 })
+
