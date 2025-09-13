@@ -30,11 +30,10 @@ class MyMentraOSApp extends AppServer {
 
     const commands: DrawCommand[] = [
     { type: "circle", cx: 50, cy: 50, radius: 20 },
-    { type: "line", x1: 10, y1: 10, x2: 90, y2: 90 },
-    { type: "triangle", x1: 20, y1: 80, x2: 80, y2: 80, x3: 50, y3: 20 },
+    { type: "line", x1: 50, y1: 50, x2: 70, y2: 50 }
     ];
 
-    executeDrawingCommands(session, commands, 200, 200, false); 
+    executeDrawingCommands(session, commands, 200, 200); 
 
     session.events.onDisconnected(() => {
       session.logger.info(`Session ${sessionId} disconnected.`)
@@ -42,7 +41,6 @@ class MyMentraOSApp extends AppServer {
   }
 }
 
-// Create and start the app server
 const server = new MyMentraOSApp({
   packageName: PACKAGE_NAME,
   apiKey: MENTRAOS_API_KEY,

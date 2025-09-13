@@ -82,21 +82,9 @@ export async function executeDrawingCommands(
   session: any,  
   commands: DrawCommand[],
   width: number = 200,
-  height: number = 200,
-  stepwise: boolean = true
-): Promise<void> {
-  if (stepwise) {
-    // Render stepwise (animated)
-    await renderCommandsStepwise(
-      width, height, commands, true, 500, 
-      async (canvasSoFar, stepIndex) => {
-        await showCanvasInSession(canvasSoFar, session, width, height);
-      }
-    );
-  } else {
-    // Render all at once (non-animated)
+  height: number = 200
+  ): Promise<void> {
     const fullCanvas = renderCommands(width, height, commands, true);
     console.log("Finished rendering commands")
     await showCanvasInSession(fullCanvas, session, width, height);
-  }
 }
