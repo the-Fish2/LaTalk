@@ -8,5 +8,9 @@
   },
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "dependencies": {
+    "@mentra/sdk": "^2.1.22",
+    "node-fetch": "^3.3.2"
   }
 }
