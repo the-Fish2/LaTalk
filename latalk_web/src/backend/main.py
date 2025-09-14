@@ -51,10 +51,9 @@ async def stream_text(request: Request):
 
     await natural_text_message_queue.put(user_input)
 
-    # Example: respond "Received" if input contains "hello"
-    if "hello" in user_input.lower():
-        response_text = {"nl": "Received", "latex": ""}
+    if "a" in user_input:
+        response_text = {"commands": [{ "type": "circle", "cx": 50, "cy": 50, "radius": 20}, { "type": "line", "x1": 50, "y1": 50, "x2": 70, "y2": 50 }, { "type": "text", "text_str": "A", "x": 38, "y": 34, "scale": 2, "spacing": 1 }], "clear_display": True}
     else:
-        response_text = {"nl": "Processed: " + user_input, "latex": ""}
+        response_text = {"commands": [], "clear_display": False}
 
-    return JSONResponse(content=response_text)
+    return JSONResponse(content=response_text, media_type="application/json")
