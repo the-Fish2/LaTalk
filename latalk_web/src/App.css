@@ -146,8 +146,7 @@ h2 {
   flex-direction: row;
   justify-content: center;
   align-items: space-between;
-  height: 60vh;
-  max-height: 60vh;
+  max-height: 68vh;
 }
 
 .textContainer {
