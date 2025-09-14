@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Latex from "react-latex-next";
 import "./App.css";
 import micpic from "./Microphone2.png"
@@ -8,11 +8,12 @@ function App() {
   const [nlText, setNlText] = useState("");
   const [latexText, setLatexText] = useState("");
 
+
   const handleMicClick = async () => {
     setIsListening(!isListening);
 
     if (!isListening) {
-      const response = await fetch("http://127.0.0.1:8000/stream", {
+      const response = await fetch("http://127.0.0.1:3000/stream", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ input: "Lorem ipsum dolor sit amet." }),
@@ -37,6 +38,29 @@ function App() {
     }
   };
 
+  useEffect(() => {
+    const eventSource = new EventSource("http://127.0.0.1:3000/events");
+
+    eventSource.onmessage = (event) => {
+
+      try {
+        const { text } = JSON.parse(event.data);
+        setNlText((prev) => prev + " " + text);
+      } catch (err) {
+        console.error("Error parsing SSE data:", err);
+      }
+    };
+
+    eventSource.onerror = (err) => {
+      console.error("SSE connection error:", err);
+      eventSource.close();
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, []);
+
   return (
     
     <div className="app-container">
@@ -56,9 +80,7 @@ function App() {
           <div className = "textContainer">
             <h3>Natural Language</h3>
             <div className = "scrollContainer">
-              <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
-              Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum. Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
-              Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+              <p id="output_plaintext">{nlText}</p>
             </div>
           </div>
           <div className = "textContainer">

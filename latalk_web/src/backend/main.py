@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from sse_starlette.sse import EventSourceResponse
 
 import asyncio
 import json
@@ -15,6 +16,22 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+natural_text_message_queue: asyncio.Queue[str] = asyncio.Queue()
+
+@app.get("/events")
+async def events():
+    async def event_generator():
+        while True:
+            await asyncio.sleep(1)
+            message = await natural_text_message_queue.get()
+
+            yield {
+                "event": "message",
+                "data": json.dumps({"text": message})
+            }
+
+    return EventSourceResponse(event_generator())
 
 # Simulate processing input text word by word
 async def process_text(input_text: str):
@@ -31,6 +48,8 @@ async def stream_text(request: Request):
     data = await request.json()
 
     user_input = data.get("input", "")
+
+    await natural_text_message_queue.put(user_input)
 
     # Example: respond "Received" if input contains "hello"
     if "hello" in user_input.lower():
