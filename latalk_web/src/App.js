@@ -1,7 +1,38 @@
 import { useState, useEffect } from "react";
-import Latex from "react-latex-next";
 import "./App.css";
 import micpic from "./Microphone2.png"
+import 'katex/dist/katex.min.css';
+import { InlineMath, BlockMath } from 'react-katex';
+
+function renderLatex(text) {
+  const parts = [];
+  const regex = /(\$\$.*?\$\$|\$.*?\$)/g;
+  let lastIndex = 0;
+  let match;
+
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    const latex = match[0];
+    if (latex.startsWith("$$")) {
+      parts.push(<BlockMath math={latex.slice(2, -2)} />);
+    }
+    else if (latex.startsWith("$")) {
+      parts.push(<InlineMath math={latex.slice(1, -1)} />);
+    }
+    else {
+      parts.push(latex);
+    }
+    lastIndex = regex.lastIndex;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return parts;
+}
 
 function App() {
   const [isListening, setIsListening] = useState(false);
@@ -61,6 +92,29 @@ function App() {
     };
   }, []);
 
+  useEffect(() => {
+    const eventSource = new EventSource("http://127.0.0.1:3000/latex_events");
+
+    eventSource.onmessage = (event) => {
+
+      try {
+        const { text } = JSON.parse(event.data);
+        setLatexText((prev) => prev + " " + text);
+      } catch (err) {
+        console.error("Error parsing SSE data:", err);
+      }
+    };
+
+    eventSource.onerror = (err) => {
+      console.error("SSE connection error:", err);
+      eventSource.close();
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, []);
+
   return (
     
     <div className="app-container">
@@ -83,14 +137,13 @@ function App() {
               <p id="output_plaintext">{nlText}</p>
             </div>
           </div>
-          <div className = "textContainer">
+          <div className="textContainer">
             <h3>LaTeX</h3>
-            <div className = "scrollContainer">
-              <p>some more text here translated into latex</p>
-              <p className = "annotation">i love rats!</p>
+            <div className="scrollContainer">
+              <div>{renderLatex(latexText)}</div>
+              <p className="annotation">I love rats!</p>
             </div>
           </div>
-
         </div>
 
       </div>

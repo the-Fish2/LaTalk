@@ -1,4 +1,4 @@
-import { create1BitBMP, createCanvas, drawLine, drawCircle, drawRect } from './bitmap'; 
+import { createCanvas, create1BitBMP, drawLine, drawCircle, drawRect } from './bitmap'; 
 import { drawText } from './font';
 
 export type DrawCommand =
@@ -43,6 +43,7 @@ export function renderCommands(
   color: boolean = true,
   existingCanvas?: boolean[][]
 ): boolean[][] {
+  console.log("bitmapCreateCanvas", createCanvas)
   const canvas = existingCanvas ?? createCanvas(width, height); // reuse if provided
   for (const cmd of commands) {
     applyCommand(canvas, cmd, color);
@@ -85,7 +86,7 @@ async function showCanvasInSession(
   width: number,
   height: number
 ): Promise<void> {
-  const bmp = create1BitBMP(width, height, canvas);
+  const bmp = create1BitBMP(width+2, height, canvas);
   await session.layouts.showBitmapView(bmp, { view: "MAIN" });
 }
 

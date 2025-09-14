@@ -17,8 +17,8 @@ function sleep(ms: number) {
 }
 
 interface BackendResponse {
-  nl: string;
-  latex: string;
+  commands: DrawCommand[];
+  clear_display: boolean;
 }
 
 /**
@@ -33,6 +33,14 @@ class MyMentraOSApp extends AppServer {
    * @param userId - The user ID for this session
    */
     protected override async onSession(session: AppSession, sessionId: string, userId: string): Promise<void> {
+
+      let globalCanvas = getOrCreateCanvas(574, 133);
+
+      //TEST CASE 1
+      // Circle centered at (100,100) with radius 50
+      let cmd1: DrawCommand = { type: "circle", cx: 262, cy: 50, radius: 50};
+      await executeDrawingCommands(session, [cmd1], 574, 133, globalCanvas);
+      await sleep(2000);
 
     // Listen for voice commands
     const unsubscribe = session.events.onTranscription(async (data) => {
@@ -55,8 +63,19 @@ class MyMentraOSApp extends AppServer {
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.includes("application/json")) {
           const json = (await response.json()) as BackendResponse;
-          const { nl, latex } = json;
-          session.logger.info(`BACKEND RECEIVED: "${data.text}" ${nl} ${latex}`);
+          const { commands, clear_display } = json;
+          console.log(commands)
+          console.log(clear_display)
+          let r1: DrawCommand = { type: "line", x1: 262, y1: 50, x2: 312, y2: 50 };
+
+          if (clear_display) {
+            await executeDrawingCommands(session, commands, 574, 133, globalCanvas);
+          }
+          else {
+            globalCanvas = getOrCreateCanvas(574, 133);
+            await executeDrawingCommands(session, commands, 574, 133, globalCanvas);
+          }
+
         } else {
           // Log the response as text for debugging
           const text = await response.text();
