@@ -53,19 +53,10 @@ class MyMentraOSApp extends AppServer {
         });
 
         const contentType = response.headers.get("content-type");
-
         if (contentType && contentType.includes("application/json")) {
           const json = (await response.json()) as BackendResponse;
           const { nl, latex } = json;
-
           session.logger.info(`BACKEND RECEIVED: "${data.text}" ${nl} ${latex}`);
-
-          if (nl.includes("Received")) {
-            session.layouts.showTextWall("Received", {
-              view: ViewType.MAIN,
-              durationMs: 3000,
-            });
-          }
         } else {
           // Log the response as text for debugging
           const text = await response.text();
