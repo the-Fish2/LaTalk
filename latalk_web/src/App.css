@@ -154,25 +154,28 @@ h2 {
 }
 
 .bodyContainer {
-  width: 95vw;
+  width: calc(100vw - 4rem);
   display: flex;
   flex-direction: row;
-  justify-content: center;
-  align-items: space-between;
+  justify-content: flex-start;
+  align-items: flex-start;
   max-height: 68vh;
+  margin: 0 2rem;
+  gap: 2rem;
 }
 
 .textContainer {
-  width: 50%;
+  width: calc(50% - 1rem);
   display: flex;
   flex-direction: column;
   background-color: #20102C;
   border-radius: 20px;
-  margin: 1rem;
+  margin: 0;
   left: 0;
   right: 0;
   padding: 2rem;
   overflow: hidden;
+  flex: 1;
 }
 
 .textContainer2 {
