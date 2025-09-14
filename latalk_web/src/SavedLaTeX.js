@@ -11,14 +11,18 @@ function SavedLaTeX({savedLatex, renderLatex}) {
       <h1>Saved</h1>
       <h2>Your saved LaTeX translations will appear here.</h2>
       <button onClick={() => navigate('/')} className="savedButton">Home</button>
-      <div className="latexText">
-        {savedLatex.length === 0 ? (
-          <p>No saved items yet.</p>
-        ) : (
-          savedLatex.map((item) => (
-              <div>{renderLatex(item)}</div>
-          ))
-        )}
+      <div className = "textContainer2">
+        <div className = "scrollContainer">
+          <div className="latexText">
+            {savedLatex.length === 0 ? (
+              <p>No saved items yet.</p>
+            ) : (
+              savedLatex.map((item) => (
+                  <div>{renderLatex(item)}</div>
+              ))
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

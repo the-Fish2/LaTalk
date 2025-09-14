@@ -73,7 +73,7 @@
 
 .mic-button, .savedButton{
   width: 20vw;
-  height: 7rem;
+  height: 6rem;
   /* font-size: 28px; */
   border-radius: 20px;
   border: none;
@@ -166,6 +166,7 @@ h2 {
 
 .textContainer {
   width: calc(50% - 1rem);
+  height: 60vh;
   display: flex;
   flex-direction: column;
   background-color: #20102C;
@@ -176,6 +177,7 @@ h2 {
   padding: 2rem;
   overflow: hidden;
   flex: 1;
+  align-items: center;
 }
 
 .textContainer2 {
@@ -189,6 +191,8 @@ h2 {
   right: 0;
   padding: 2rem;
   overflow: hidden;
+  height: 60vh;
+  margin-bottom: 2rem;
 }
 
 .scrollContainer {
@@ -239,4 +243,19 @@ p, .latexText {
 .annotation {
   color: #725483;
   margin: 0;
+}
+
+.saveButton {
+  height: 3rem;
+  width: 50%;
+  font-size: 2rem;
+  font-family: 'Kurale';
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+  border-radius: 20px;
+  background-color: #5D3A6F;
+  border-style: none;
+  color: #371C4B;
 }
