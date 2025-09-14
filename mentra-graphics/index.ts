@@ -34,7 +34,7 @@ class MyMentraOSApp extends AppServer {
    */
     protected override async onSession(session: AppSession, sessionId: string, userId: string): Promise<void> {
 
-      let globalCanvas = getOrCreateCanvas(200, 200);
+      let globalCanvas = getOrCreateCanvas(500, 200);
 
       //TEST CASE 1
       // Circle centered at (100,100) with radius 50
@@ -72,7 +72,7 @@ class MyMentraOSApp extends AppServer {
             await executeDrawingCommands(session, commands, 200, 200, globalCanvas);
           }
           else {
-            globalCanvas = getOrCreateCanvas(200, 200);
+            globalCanvas = getOrCreateCanvas(500, 200);
             await executeDrawingCommands(session, commands, 200, 200, globalCanvas);
           }
 

@@ -48,12 +48,14 @@ def latexify_text(
         out = "".join(b.text for b in resp.content if getattr(b, "type", None) == "text")
     return out
 
-def andreas_magic_function():
+def latex_return(input_text):
     #this function should return two things!
     #1. a string containing the latex
     #2. geometry displays following the format I specified
     #for now it's not implemented
     return (
-        "testing the quadratic formula which is $\\frac{-b\\pm\\sqrt{b^2-4ac}}{2a}$. it is useful. $$\\int_0^\\infty x^2 dx$$ $$\\int_0^\\infty x^2 dx$$ very cool stuff. remember teh quadratic formula: $\\frac{-b\\pm\\sqrt{b^2-4ac}}{2a}$??", 
-        {"commands": [], "clear_display": True}
+        "testing the quadratic formula which is $\\frac{-b\\pm\\sqrt{b^2-4ac}}{2a}$. it is useful. $$\\int_0^\\infty x^2 dx$$ $$\\int_0^\\infty x^2 dx$$ very cool stuff. remember teh quadratic formula: $\\frac{-b\\pm\\sqrt{b^2-4ac}}{2a}$??",
         )
+
+def command_return(input_text):
+    return {"commands": [], "clear_display": True}

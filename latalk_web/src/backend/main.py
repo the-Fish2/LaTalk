@@ -6,7 +6,7 @@ from sse_starlette.sse import EventSourceResponse
 
 import asyncio
 import json
-from latalk_web.src.backend.anthro_file import andreas_magic_function
+from latalk_web.src.backend.anthro_file import latex_return, command_return
 
 app = FastAPI()
 
@@ -62,7 +62,7 @@ async def process_text(input_text: str):
 async def manage_latex_text(input_text: str):
     async def task():
         try:
-            latex, _geometry = andreas_magic_function()
+            latex = latex_return(input_text)
             print(latex)
             # push LaTeX result when ready
             await latex_text_message_queue.put(latex)
