@@ -2,6 +2,7 @@ import os
 import json
 from typing import Any, Dict, List, Optional
 from anthropic import Anthropic
+from annotation import annotate_speech
 
 MODEL = "claude-sonnet-4-20250514"
 
@@ -41,11 +42,12 @@ SYSTEM_GRAPHICS = (
 )
 
 def text_of(message) -> str:
-    """Concatenate all text blocks in a Message"""
-    return "".join(
+    """Concatenate all text blocks in a Message and generate annotations"""
+    concatenated = "".join(
         b.text for b in message.content
         if getattr(b, "type", None) == "text"
     ).strip()
+    return annotate_speech(concatenated)
 
 def get_client() -> Anthropic:
     api_key = os.environ.get("ANTHROPIC_API_KEY")
