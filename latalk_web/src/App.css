@@ -224,7 +224,7 @@ h3 {
   font-family: 'Kurale';
 }
 
-p, .katex {
+p, .latexText {
   color: #AA98B5;
   font-size: 1.5rem;
   text-align: left;

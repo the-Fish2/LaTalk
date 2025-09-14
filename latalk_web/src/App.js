@@ -24,7 +24,7 @@ function renderLatex(text) {
       parts.push(<InlineMath math={latex.slice(1, -1)} />);
     }
     else {
-      parts.push(latex);
+      parts.push(<p>{latex}</p>);
     }
     lastIndex = regex.lastIndex;
   }

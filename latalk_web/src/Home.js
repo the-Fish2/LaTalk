@@ -124,7 +124,7 @@ function Home({savedLatex, setSavedLatex, renderLatex}) {
           <div className="textContainer">
             <h3>LaTeX</h3>
             <div className="scrollContainer">
-              <div>{renderLatex(latexText)}</div>
+              <div className="latexText">{renderLatex(latexText)}</div>
               {/* <p className="annotation">I love rats!</p> */}
             </div>
             <button onClick={addToSaved} className="saveButton">Save</button>
