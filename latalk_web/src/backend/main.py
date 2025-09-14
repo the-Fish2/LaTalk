@@ -1,12 +1,14 @@
-from fastapi import FastAPI, Request
-from fastapi.responses import StreamingResponse
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-from sse_starlette.sse import EventSourceResponse
+from fastapi import FastAPI, Depends, HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.orm import sessionmaker, declarative_base, relationship
+from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.future import select
+from passlib.context import CryptContext
 
-import asyncio
-import json
-from latalk_web.src.backend.anthro_file import andreas_magic_function
+app = FastAPI()
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
@@ -18,74 +20,105 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-natural_text_message_queue: asyncio.Queue[str] = asyncio.Queue()
-latex_text_message_queue: asyncio.Queue[str] = asyncio.Queue()
+DATABASE_URL = "sqlite+aiosqlite:///./users.db"
 
-@app.get("/events")
-async def events():
-    async def event_generator():
-        while True:
-            await asyncio.sleep(1)
-            message = await natural_text_message_queue.get()
+engine = create_async_engine(DATABASE_URL, echo=True)
+SessionLocal = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
+Base = declarative_base()
 
-            yield {
-                "event": "message",
-                "data": json.dumps({"text": message})
-            }
+class User(Base):
+    __tablename__ = "users"
 
-    return EventSourceResponse(event_generator())
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
 
-@app.get("/latex_events")
-async def latex_events():
-    async def event_generator():
-        while True:
-            await asyncio.sleep(1)
-            message = await latex_text_message_queue.get()
+    snippets = relationship("LatexSnippet", back_populates="user", cascade="all, delete")
 
-            yield {
-                "event": "message",
-                "data": json.dumps({"text": message})
-            }
+class LatexSnippet(Base):
+    __tablename__ = "latex_snippets"
 
-    return EventSourceResponse(event_generator())
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    latex = Column(String, nullable=False)
 
-# Simulate processing input text word by word
-async def process_text(input_text: str):
-    words = input_text.split()
-    for word in words:
-        await asyncio.sleep(0.5)  # simulate delay
-        yield json.dumps({
-            "nl": word.upper(),
-            "latex": f"\\\\textbf{{{word}}}"
-        }) + "\n"
+    user = relationship("User", back_populates="snippets")
 
-async def manage_latex_text(input_text: str):
-    async def task():
-        try:
-            latex, _geometry = andreas_magic_function()
-            print(latex)
-            # push LaTeX result when ready
-            await latex_text_message_queue.put(latex)
-        except Exception as e:
-            print(f"Error in manage_latex_text: {e}")
+async def get_session() -> AsyncSession:
+    async with SessionLocal() as session:
+        yield session
 
-    # fire-and-forget background job
-    asyncio.create_task(task())
+@app.on_event("startup")
+async def startup():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
 
-@app.post("/stream")
-async def stream_text(request: Request):
-    data = await request.json()
+def get_password_hash(password: str):
+    return pwd_context.hash(password)
 
-    user_input = data.get("input", "")
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
 
-    await natural_text_message_queue.put(user_input)
+@app.post("/signup")
+async def signup(data: dict, session: AsyncSession = Depends(get_session)):
+    username = data.get("username")
+    password = data.get("password")
+    if not username or not password:
+        raise HTTPException(status_code=400, detail="Missing username or password")
 
-    #await latex_text_message_queue.put(user_input)
-    await manage_latex_text(user_input)
+    result = await session.execute(select(User).where(User.username == username))
+    if result.scalars().first():
+        raise HTTPException(status_code=400, detail="Username already exists")
 
-    if "a" in user_input:
-        response_text = {"commands": [{ "type": "circle", "cx": 50, "cy": 50, "radius": 20}, { "type": "line", "x1": 50, "y1": 50, "x2": 70, "y2": 50 }, { "type": "text", "text_str": "A", "x": 38, "y": 34, "scale": 2, "spacing": 1 }], "clear_display": True}
-    else:
-        response_text = {"commands": [], "clear_display": False}
+    hashed_pw = get_password_hash(password)
+    new_user = User(username=username, hashed_password=hashed_pw)
+    session.add(new_user)
+    await session.commit()
+    await session.refresh(new_user)
+    return {"message": "User created successfully", "username": new_user.username}
 
-    return JSONResponse(content=response_text, media_type="application/json")
+@app.post("/login")
+async def login(data: dict, session: AsyncSession = Depends(get_session)):
+    username = data.get("username")
+    password = data.get("password")
+    if not username or not password:
+        raise HTTPException(status_code=400, detail="Missing username or password")
+
+    result = await session.execute(select(User).where(User.username == username))
+    user = result.scalars().first()
+    if not user or not verify_password(password, user.hashed_password):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    return {"access_token": user.username, "token_type": "bearer"}
+
+@app.post("/save-latex")
+async def save_latex(data: dict, session: AsyncSession = Depends(get_session)):
+    username = data.get("username")
+    latex = data.get("latex")
+    if not username or not latex:
+        raise HTTPException(status_code=400, detail="Missing username or latex")
+
+    result = await session.execute(select(User).where(User.username == username))
+    user = result.scalars().first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    snippet = LatexSnippet(user_id=user.id, latex=latex)
+    session.add(snippet)
+    await session.commit()
+    await session.refresh(snippet)
+
+    return {"id": snippet.id, "latex": snippet.latex}
+
+@app.get("/get-latex/{username}")
+async def get_latex(username: str, session: AsyncSession = Depends(get_session)):
+    result = await session.execute(select(User).where(User.username == username))
+    user = result.scalars().first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    result = await session.execute(
+        select(LatexSnippet).where(LatexSnippet.user_id == user.id)
+    )
+    snippets = result.scalars().all()
+    return {"snippets": [{"id": s.id, "latex": s.latex} for s in snippets]}

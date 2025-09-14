@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './Home';
 import SavedLaTeX from './SavedLaTeX';
+import Login from './Login';
 import { useState, useEffect } from "react";
 import 'katex/dist/katex.min.css';
 import { InlineMath, BlockMath } from 'react-katex';
@@ -44,6 +45,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home savedLatex={savedLatex} setSavedLatex={setSavedLatex} renderLatex={renderLatex}/>} />
         <Route path="/SavedLaTeX" element={<SavedLaTeX savedLatex={savedLatex} renderLatex={renderLatex}/>} />
+        <Route path="/Login" element={<Login />} />
       </Routes>
     </Router>
   );

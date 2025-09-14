@@ -71,7 +71,7 @@
   font-weight: bold;
 } */
 
-.mic-button, .savedButton{
+.mic-button, .savedButton, .loginButton{
   width: 20vw;
   height: 6rem;
   /* font-size: 28px; */
@@ -88,7 +88,7 @@
   padding: 0.5rem;
 }
 
-.mic-button {
+.mic-button, .loginButton {
   left: 2rem;
 }
 
@@ -100,7 +100,7 @@
   background: #57356a;
 }
 
-.savedButton {
+.savedButton, .loginButton {
   right: 2rem;
   font-size: 2rem;
   font-family: "Kurale";
@@ -257,4 +257,63 @@ p, .latexText {
   background-color: #5D3A6F;
   border-style: none;
   color: #371C4B;
+}
+
+.submit {
+  height: 3rem;
+  width: auto;
+  font-size: 1.5rem;
+  font-family: 'Kurale';
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+  border-radius: 20px;
+  background-color: #5D3A6F;
+  border-style: none;
+  color: #371C4B;
+  cursor: pointer;
+  padding: 1rem;
+  margin-top: 2rem;
+}
+
+.toggle, .alert {
+  background-color: transparent;
+  border-style: none;
+  height: 3rem;
+  width: auto;
+  font-size: 1rem;
+  font-family: 'Kurale';
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
+  color: #371C4B;
+  cursor: pointer;
+  padding: 1rem;
+}
+
+.alert.success {
+  color: transparent;
+}
+
+.submitContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  margin-top: 5rem;
+}
+
+.usernamepwInput {
+  height: 3rem;
+  width: 100%;
+  font-size: 1.5rem;
+  font-family: 'Inconsolata';
+  border-radius: 12px;
+  border: none;
+  padding: 0 1rem;
+  box-sizing: border-box;
 }
