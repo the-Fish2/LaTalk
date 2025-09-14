@@ -37,7 +37,7 @@ function renderLatex(text) {
 function App() {
   const [isListening, setIsListening] = useState(false);
   const [nlText, setNlText] = useState("");
-  const [latexText, setLatexText] = useState("testing the quadratic formula which is $\\frac{-b\\pm\\sqrt{b^2-4ac}}{2a}$. it is useful. $$\\int_0^\\infty x^2 dx$$ $$\\int_0^\\infty x^2 dx$$ very cool stuff. remember teh quadratic formula: $\\frac{-b\\pm\\sqrt{b^2-4ac}}{2a}$??");
+  const [latexText, setLatexText] = useState("");
 
 
   const handleMicClick = async () => {
@@ -92,6 +92,29 @@ function App() {
     };
   }, []);
 
+  useEffect(() => {
+    const eventSource = new EventSource("http://127.0.0.1:3000/latex_events");
+
+    eventSource.onmessage = (event) => {
+
+      try {
+        const { text } = JSON.parse(event.data);
+        setLatexText((prev) => prev + " " + text);
+      } catch (err) {
+        console.error("Error parsing SSE data:", err);
+      }
+    };
+
+    eventSource.onerror = (err) => {
+      console.error("SSE connection error:", err);
+      eventSource.close();
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, []);
+
   return (
     
     <div className="app-container">
@@ -117,9 +140,7 @@ function App() {
           <div className="textContainer">
             <h3>LaTeX</h3>
             <div className="scrollContainer">
-              <p>
-                {renderLatex(latexText)}
-              </p>
+              <div>{renderLatex(latexText)}</div>
               <p className="annotation">I love rats!</p>
             </div>
           </div>
