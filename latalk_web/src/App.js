@@ -4,10 +4,40 @@ import micpic from "./Microphone2.png"
 import 'katex/dist/katex.min.css';
 import { InlineMath, BlockMath } from 'react-katex';
 
+function renderLatex(text) {
+  const parts = [];
+  const regex = /(\$\$.*?\$\$|\$.*?\$)/g;
+  let lastIndex = 0;
+  let match;
+
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    const latex = match[0];
+    if (latex.startsWith("$$")) {
+      parts.push(<BlockMath math={latex.slice(2, -2)} />);
+    }
+    else if (latex.startsWith("$")) {
+      parts.push(<InlineMath math={latex.slice(1, -1)} />);
+    }
+    else {
+      parts.push(latex);
+    }
+    lastIndex = regex.lastIndex;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return parts;
+}
+
 function App() {
   const [isListening, setIsListening] = useState(false);
   const [nlText, setNlText] = useState("");
-  const [latexText, setLatexText] = useState("");
+  const [latexText, setLatexText] = useState("testing the quadratic formula which is $\\frac{-b\\pm\\sqrt{b^2-4ac}}{2a}$. it is useful. $$\\int_0^\\infty x^2 dx$$ $$\\int_0^\\infty x^2 dx$$ very cool stuff. remember teh quadratic formula: $\\frac{-b\\pm\\sqrt{b^2-4ac}}{2a}$??");
 
 
   const handleMicClick = async () => {
@@ -88,10 +118,8 @@ function App() {
             <h3>LaTeX</h3>
             <div className="scrollContainer">
               <p>
-                this is the quadratic formula <InlineMath math={"\\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}"} />
+                {renderLatex(latexText)}
               </p>
-              <BlockMath math={"\\int_0^\\infty x^2 dx"} />
-              <BlockMath math={"\\int_0^\\infty x^2 dx"} />
               <p className="annotation">I love rats!</p>
             </div>
           </div>
