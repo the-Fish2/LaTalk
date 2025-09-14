@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import { useNavigate } from "react-router-dom";
+import 'katex/dist/katex.min.css';
 
 function SavedButton() {
   const navigate = useNavigate();
@@ -29,10 +30,89 @@ function LoginButton() {
 
 
 function Home({ renderLatex }) {
+  const [isListening, setIsListening] = useState(false);
   const [nlText, setNlText] = useState("");
   const [latexText, setLatexText] = useState(
     "testing the quadratic formula which is $\\frac{-b\\pm\\sqrt{b^2-4ac}}{2a}$. it is useful. $$\\int_0^\\infty x^2 dx$$ $$\\int_0^\\infty x^2 dx$$ very cool stuff. remember the quadratic formula: $\\frac{-b\\pm\\sqrt{b^2-4ac}}{2a}$??"
   ); // initial sample text
+
+  const handleMicClick = async () => {
+    setIsListening(!isListening);
+
+    if (!isListening) {
+      const response = await fetch("http://127.0.0.1:3000/stream", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input: "Lorem ipsum dolor sit amet." }),
+      });
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        try {
+          const { nl, latex } = JSON.parse(chunk);
+          setNlText((prev) => prev + " " + nl);
+          setLatexText((prev) => prev + " " + latex);
+        } catch {
+          // skip incomplete chunks
+        }
+      }
+      setIsListening(false);
+    }
+  };
+
+  useEffect(() => {
+    const eventSource = new EventSource("http://127.0.0.1:3000/events");
+
+    eventSource.onmessage = (event) => {
+
+      try {
+        const { text } = JSON.parse(event.data);
+        setNlText((prev) => prev + " " + text);
+      } catch (err) {
+        console.error("Error parsing SSE data:", err);
+      }
+    };
+
+    eventSource.onerror = (err) => {
+      console.error("SSE connection error:", err);
+      eventSource.close();
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, []);
+
+  useEffect(() => {
+    const eventSource = new EventSource("http://127.0.0.1:3000/latex_events");
+
+    eventSource.onmessage = (event) => {
+
+      try {
+        const { text } = JSON.parse(event.data);
+        setLatexText((prev) => prev + " " + text);
+      } catch (err) {
+        console.error("Error parsing SSE data:", err);
+      }
+    };
+
+    eventSource.onerror = (err) => {
+      console.error("SSE connection error:", err);
+      eventSource.close();
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, []);
+
+
+
   const [savedLatex, setSavedLatex] = useState([]); // snippets per user
   const username = localStorage.getItem("token"); // stored after login
 

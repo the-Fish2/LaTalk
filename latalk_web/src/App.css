@@ -259,6 +259,15 @@ p, .latexText {
   color: #371C4B;
 }
 
+.saveButton:hover {
+  background-color: #57356a;
+}
+
+
+.saveButton.active {
+  background-color: #57356a;
+}
+
 .submit {
   height: 3rem;
   width: auto;

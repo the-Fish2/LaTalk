@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./App.css";
 import "katex/dist/katex.min.css";
-import { InlineMath, BlockMath } from "react-katex";
 
 function SavedLaTeX({ renderLatex }) {
   const navigate = useNavigate();
