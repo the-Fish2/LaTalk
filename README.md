@@ -7,6 +7,7 @@ Instructions for setup
 code setup:
 1. build venv in src/backend, run pip install -r requirements.txt
 2. npm install in latalk_web
+3. install bun
 
 Set up website:
 backend on port 3000

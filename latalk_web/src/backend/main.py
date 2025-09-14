@@ -9,6 +9,9 @@ app = FastAPI()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 from fastapi.middleware.cors import CORSMiddleware
+import asyncio
+import json
+from latalk_web.src.backend.anthro_file import latex_return, command_return, get_client
 
 app = FastAPI()
 
