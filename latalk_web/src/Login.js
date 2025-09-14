@@ -12,8 +12,8 @@ const Login = () => {
     e.preventDefault();
   
     const url = isSignUp
-      ? "http://127.0.0.1:8004/signup"
-      : "http://127.0.0.1:8004/login";
+      ? "http://127.0.0.1:8005/signup"
+      : "http://127.0.0.1:8005/login";
   
     try {
       const response = await fetch(url, {

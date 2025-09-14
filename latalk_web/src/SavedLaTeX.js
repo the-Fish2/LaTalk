@@ -13,7 +13,7 @@ function SavedLaTeX({ renderLatex }) {
 
     const fetchSaved = async () => {
       try {
-        const res = await fetch(`http://127.0.0.1:8004/get-latex/${username}`);
+        const res = await fetch(`http://127.0.0.1:8005/get-latex/${username}`);
         if (res.ok) {
           const data = await res.json();
           setSavedLatex(data.snippets || []);
