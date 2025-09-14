@@ -48,14 +48,11 @@ def latexify_text(
         out = "".join(b.text for b in resp.content if getattr(b, "type", None) == "text")
     return out
 
-def latex_return(input_text):
-    #this function should return two things!
-    #1. a string containing the latex
-    #2. geometry displays following the format I specified
-    #for now it's not implemented
-    return (
-        "testing the quadratic formula which is $\\frac{-b\\pm\\sqrt{b^2-4ac}}{2a}$. it is useful. $$\\int_0^\\infty x^2 dx$$ $$\\int_0^\\infty x^2 dx$$ very cool stuff. remember teh quadratic formula: $\\frac{-b\\pm\\sqrt{b^2-4ac}}{2a}$??",
-        )
+def latex_return(client, input_text):
+    return latexify_text(client, input_text)
+    # (
+    #     "testing the quadratic formula which is $\\frac{-b\\pm\\sqrt{b^2-4ac}}{2a}$. it is useful. $$\\int_0^\\infty x^2 dx$$ $$\\int_0^\\infty x^2 dx$$ very cool stuff. remember teh quadratic formula: $\\frac{-b\\pm\\sqrt{b^2-4ac}}{2a}$??",
+    #     )
 
 def command_return(input_text):
-    return {"commands": [], "clear_display": True}
+    return {"commands": [{ "type": "circle", "cx": 262, "cy": 50, "radius": 50}, { "type": "line", "x1": 262, "y1": 50, "x2": 312, "y2": 50 }, { "type": "text", "text_str": "A", "x": 38, "y": 34, "scale": 4, "spacing": 1 }], "clear_display": True}

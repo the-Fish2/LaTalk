@@ -34,12 +34,12 @@ class MyMentraOSApp extends AppServer {
    */
     protected override async onSession(session: AppSession, sessionId: string, userId: string): Promise<void> {
 
-      let globalCanvas = getOrCreateCanvas(500, 200);
+      let globalCanvas = getOrCreateCanvas(574, 133);
 
       //TEST CASE 1
       // Circle centered at (100,100) with radius 50
-      let cmd1: DrawCommand = { type: "circle", cx: 50, cy: 50, radius: 20};
-      await executeDrawingCommands(session, [cmd1], 200, 200, globalCanvas);
+      let cmd1: DrawCommand = { type: "circle", cx: 262, cy: 50, radius: 50};
+      await executeDrawingCommands(session, [cmd1], 574, 133, globalCanvas);
       await sleep(2000);
 
     // Listen for voice commands
@@ -66,14 +66,14 @@ class MyMentraOSApp extends AppServer {
           const { commands, clear_display } = json;
           console.log(commands)
           console.log(clear_display)
-          let r1: DrawCommand = { type: "line", x1: 50, y1: 50, x2: 70, y2: 50 };
+          let r1: DrawCommand = { type: "line", x1: 262, y1: 50, x2: 312, y2: 50 };
 
           if (clear_display) {
-            await executeDrawingCommands(session, commands, 200, 200, globalCanvas);
+            await executeDrawingCommands(session, commands, 574, 133, globalCanvas);
           }
           else {
-            globalCanvas = getOrCreateCanvas(500, 200);
-            await executeDrawingCommands(session, commands, 200, 200, globalCanvas);
+            globalCanvas = getOrCreateCanvas(574, 133);
+            await executeDrawingCommands(session, commands, 574, 133, globalCanvas);
           }
 
         } else {

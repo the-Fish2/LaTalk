@@ -86,7 +86,7 @@ async function showCanvasInSession(
   width: number,
   height: number
 ): Promise<void> {
-  const bmp = create1BitBMP(width, height, canvas);
+  const bmp = create1BitBMP(width+2, height, canvas);
   await session.layouts.showBitmapView(bmp, { view: "MAIN" });
 }
 
