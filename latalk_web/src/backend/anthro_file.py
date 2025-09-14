@@ -176,7 +176,7 @@ def graphics_text(
     return sanitize_graphics(obj)
 
 def latex_return(client, input_text):
-    return latexify_text(client, input_text)
+    return latexify_text(client, annotate_speech(input_text))
 
 def command_return(client, input_text):
     return graphics_text(client, input_text)
