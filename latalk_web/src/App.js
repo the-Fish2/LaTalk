@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import Latex from "react-latex-next";
 import "./App.css";
 import micpic from "./Microphone2.png"
+import 'katex/dist/katex.min.css';
+import { InlineMath, BlockMath } from 'react-katex';
 
 function App() {
   const [isListening, setIsListening] = useState(false);
@@ -83,14 +84,17 @@ function App() {
               <p id="output_plaintext">{nlText}</p>
             </div>
           </div>
-          <div className = "textContainer">
+          <div className="textContainer">
             <h3>LaTeX</h3>
-            <div className = "scrollContainer">
-              <p>some more text here translated into latex</p>
-              <p className = "annotation">i love rats!</p>
+            <div className="scrollContainer">
+              <p>
+                this is the quadratic formula <InlineMath math={"\\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}"} />
+              </p>
+              <BlockMath math={"\\int_0^\\infty x^2 dx"} />
+              <BlockMath math={"\\int_0^\\infty x^2 dx"} />
+              <p className="annotation">I love rats!</p>
             </div>
           </div>
-
         </div>
 
       </div>
