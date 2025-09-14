@@ -1,0 +1,1 @@
+I have 3 red marbles in a bag, 2 green marbles, and 5 orange marble. Why chance I pull 3 red without replacement is 1/120. Why?
